@@ -310,7 +310,7 @@ SEED_PLAYERS.forEach(p => {
   playerMap.set(p.id, { id: p.id, n: p.n, norm: normalizeStr(p.n), tags: new Set(p.t) });
 });
 
-// CSV'lerdeki gerçek Team ID Haritaları (Senin team_lookup.csv dosyanla %100 uyumlu)
+// CSV'lerdeki gerçek Team ID Haritaları
 const CLUB_ID_MAP = {
   141: 'GS', 36: 'FB', 114: 'BJK', 449: 'TS',
   418: 'RMA', 131: 'BAR', 13: 'ATM',
@@ -359,7 +359,6 @@ async function fetchTextSafe(url) {
   }
 }
 
-// Tarayıcıyı dondurmadan CSV satırlarını okuyan yardımcı fonksiyon
 async function processLinesChunked(text, callback) {
   if (!text) return;
   const lines = text.split(/\r?\n/);
@@ -377,7 +376,7 @@ async function loadAllCSVsAutomatically() {
   const statusEl = document.getElementById('dbStatus');
   const progEl = document.getElementById('dbProgress');
 
-  // 1. İsimleri Yükle (player_names.csv & player_profiles.csv)
+  // 1. İsimleri Yükle (player_names.csv)
   const namesTxt = await fetchTextSafe('player_names.csv');
   if (!namesTxt) {
     statusEl.innerText = '⚡ Hızlı Mod Aktif (CSV dosyaları aynı klasöre atıldığında otomatik okunur)';
@@ -455,7 +454,7 @@ async function loadAllCSVsAutomatically() {
 
     let st = totals.get(pid);
     if (!st) {
-      st = [0, 0, 0]; // [apps, goals, assists]
+      st = [0, 0, 0];
       totals.set(pid, st);
     }
     st[0] += apps;
@@ -471,12 +470,12 @@ async function loadAllCSVsAutomatically() {
     if (st[2] >= 50) pObj.tags.add('A_50');
   });
 
-  // 5. Takım Arkadaşlığı (player_teammates_extra_stats.csv & _2.csv)
+  // 5. Takım Arkadaşlığı (player_tmmts.csv)
   statusEl.innerText = '5/5: Takım arkadaşları eşleştiriliyor...';
   progEl.style.width = '95%';
   const starMap = { 28003: 'TM_MESSI', 8198: 'TM_RONALDO', 58088: 'TM_MUSLERA' };
 
-  for (const tmFile of ['player_teammates_extra_stats.csv', 'player_teammates_extra_stats_2.csv']) {
+  for (const tmFile of ['player_tmmts.csv', 'player_tmmts_2.csv']) {
     const tmTxt = await fetchTextSafe(tmFile);
     await processLinesChunked(tmTxt, (line) => {
       const p = line.split(',');
@@ -492,11 +491,10 @@ async function loadAllCSVsAutomatically() {
   if (!gameOver && board.length > 0) renderBoard();
 }
 
-// Sayfa açılır açılmaz arka planda CSV'leri okumaya başla
 loadAllCSVsAutomatically();
 
 // ================= 3. 5-4-5-4-5 ALTIGEN TAHTA VE OYUN MANTIĞI =================
-const ROW_LENGTHS = [5, 4, 5, 4, 5]; // 23 Petek
+const ROW_LENGTHS = [5, 4, 5, 4, 5];
 const P1_START_IDX = 4;  // Sağ Üst Köşe (Mavi Bayrak)
 const P2_START_IDX = 18; // Sol Alt Köşe (Kırmızı Bayrak)
 
@@ -784,12 +782,11 @@ function applyMove(targetIdx, playerNum, playerName) {
 
   if (wasOwnedByOpponent) {
     cell.steals += 1;
-    if (cell.steals >= 2) cell.locked = true; // En fazla 2 kez çalınabilir!
+    if (cell.steals >= 2) cell.locked = true;
   }
 
   cell.owner = playerNum;
 
-  // Bayrak karesine ulaşıldıysa oyun biter ve +5 bonus puan verilir
   if ((playerNum === 1 && targetIdx === P2_START_IDX) || (playerNum === 2 && targetIdx === P1_START_IDX)) {
     renderBoard();
     endGame(`🚩 Bayrak Ele Geçirildi! (${playerName})`);

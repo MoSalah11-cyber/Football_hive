@@ -3,107 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>HEXFOOTY - Stratejik Futbol Petek Oyunu</title>
+<title>HEXFOOTY</title>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0f19;
-    --panel: #161f33;
-    --border: #2a3958;
-    --p1: #3b82f6;
-    --p1-glow: rgba(59, 130, 246, 0.55);
+    --bg: #09090b;
+    --surface: #121216;
+    --surface-2: #18181e;
+    --border: #27272f;
+    --accent: #facc15;
+    --accent-dim: rgba(250, 204, 21, 0.14);
+    --p1: #facc15;
+    --p1-bg: linear-gradient(160deg, #423507, #141208);
     --p2: #ef4444;
-    --p2-glow: rgba(239, 68, 68, 0.55);
-    --gold: #f59e0b;
-    --text: #f8fafc;
-    --hex-w: 92px;
-    --hex-h: 104px;
+    --p2-bg: linear-gradient(160deg, #451010, #160a0a);
+    --text: #fafafa;
+    --muted: #8b8b99;
+    --hex-w: 94px;
+    --hex-h: 106px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
-  body { background: radial-gradient(circle at top, #172544, var(--bg)); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
 
-  /* ÜST BAR & SKOR TABLOSU */
-  header { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(22, 31, 51, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); border-radius: 0 0 18px 18px; margin-bottom: 8px; }
-  .player-card { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 12px; border: 2px solid transparent; transition: 0.3s; }
-  .player-card.p1 { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); }
-  .player-card.p2 { background: rgba(239, 68, 68, 0.12); border-color: rgba(239, 68, 68, 0.3); }
-  .player-card.active.p1 { border-color: var(--p1); box-shadow: 0 0 16px var(--p1-glow); transform: scale(1.03); }
-  .player-card.active.p2 { border-color: var(--p2); box-shadow: 0 0 16px var(--p2-glow); transform: scale(1.03); }
-  .score-badge { font-size: 1.45rem; font-weight: 800; padding: 2px 9px; border-radius: 8px; background: rgba(0,0,0,0.4); }
-  .center-hud { text-align: center; }
-  .timer-box { font-size: 1.5rem; font-weight: 800; color: var(--gold); background: #090d16; padding: 3px 15px; border-radius: 10px; border: 1px solid var(--border); display: inline-block; }
-  .turn-info { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; }
+
+  /* ÜST SKOR PANELİ */
+  header { width: 100%; max-width: 780px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: rgba(18, 18, 22, 0.92); backdrop-filter: blur(12px); }
+
+  .player-card { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); transition: all 0.25s ease; }
+  .player-card.active.p1 { border-color: var(--p1); background: rgba(250, 204, 21, 0.08); box-shadow: 0 0 20px rgba(250, 204, 21, 0.12); }
+  .player-card.active.p2 { border-color: var(--p2); background: rgba(239, 68, 68, 0.08); box-shadow: 0 0 20px rgba(239, 68, 68, 0.12); }
+
+  .p-meta { display: flex; flex-direction: column; gap: 2px; }
+  .p-role { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .p1 .p-role { color: var(--p1); }
+  .p2 .p-role { color: var(--p2); }
+  .p-name { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+  .score-badge { font-size: 1.5rem; font-weight: 900; font-variant-numeric: tabular-nums; padding: 0 6px; }
+
+  .center-hud { display: flex; flex-direction: column; align-items: center; min-width: 74px; }
+  .timer-box { font-size: 1.55rem; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--accent); line-height: 1; }
+  .turn-info { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* BİLGİ ŞERİDİ */
+  .helper-bar { font-size: 0.78rem; color: var(--muted); border: 1px solid var(--border); background: var(--surface); padding: 8px 16px; border-radius: 8px; margin: 14px 12px 6px 12px; text-align: center; max-width: 680px; }
+  .helper-bar b { color: var(--text); font-weight: 600; }
 
   /* LOBİ EKRANI */
-  #lobbyScreen { position: fixed; inset: 0; background: rgba(11, 15, 25, 0.96); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
-  .lobby-card { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.65); }
-  .lobby-title { font-size: 1.9rem; font-weight: 800; background: linear-gradient(90deg, #60a5fa, #f87171); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
-  .lobby-sub { font-size: 0.85rem; color: #94a3b8; margin-bottom: 14px; }
+  #lobbyScreen { position: fixed; inset: 0; background: rgba(9, 9, 11, 0.98); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 18px; overflow-y: auto; }
+  .lobby-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 30px 24px; width: 100%; max-width: 420px; text-align: center; }
+  .brand-tag { display: inline-block; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bg); background: var(--accent); padding: 4px 10px; border-radius: 4px; margin-bottom: 12px; }
+  .lobby-title { font-size: 2.1rem; font-weight: 900; letter-spacing: -0.03em; color: var(--text); margin-bottom: 6px; }
+  .lobby-sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 20px; }
 
-  .progress-wrap { background: #090d16; border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 16px; }
-  .progress-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 6px; overflow: hidden; margin-top: 6px; }
-  .progress-bar-fill { height: 100%; width: 15%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.3s; }
+  .progress-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 20px; text-align: left; }
+  .progress-top { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
+  .progress-bar-bg { width: 100%; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .progress-bar-fill { height: 100%; width: 12%; background: var(--accent); transition: width 0.3s ease; }
 
-  .btn { width: 100%; padding: 13px; border: none; border-radius: 12px; font-weight: 700; font-size: 0.96rem; cursor: pointer; transition: 0.2s; margin-bottom: 10px; color: white; }
-  .btn-primary { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-  .btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-  .btn-secondary { background: #26334d; color: #e2e8f0; }
+  .btn { width: 100%; padding: 13px 16px; border: 1px solid transparent; border-radius: 10px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: 0.2s; margin-bottom: 10px; letter-spacing: 0.01em; }
+  .btn-accent { background: var(--accent); color: #09090b; }
+  .btn-accent:hover { background: #fde047; }
+  .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-ghost { background: var(--surface-2); color: var(--text); }
+  .btn-ghost:hover { background: #22222a; }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
   .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  .input-row input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: #0b0f19; color: white; font-size: 0.95rem; text-align: center; text-transform: uppercase; }
-  .room-code-display { background: #090d16; padding: 10px; border-radius: 10px; border: 1px dashed var(--gold); color: var(--gold); font-weight: 800; font-size: 1.25rem; margin: 8px 0; letter-spacing: 3px; }
+  .input-row input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.9rem; font-weight: 600; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; outline: none; }
+  .input-row input:focus { border-color: var(--accent); }
+  .room-code-display { background: var(--bg); padding: 12px; border-radius: 10px; border: 1px solid var(--accent); color: var(--accent); font-weight: 900; font-size: 1.4rem; margin: 10px 0; letter-spacing: 0.22em; }
 
   /* 5-4-5-4-5 PETEK TAHTASI */
-  #boardWrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 6px; margin: auto; }
-  .hex-row { display: flex; justify-content: center; gap: 7px; margin-top: -21px; }
+  #boardWrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 8px 30px 8px; margin: auto; }
+  .hex-row { display: flex; justify-content: center; gap: 8px; margin-top: -22px; }
   .hex-row:first-child { margin-top: 0; }
 
-  .hex { width: var(--hex-w); height: var(--hex-h); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: #24324f; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.25s; }
-  .hex-inner { width: calc(100% - 6px); height: calc(100% - 6px); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: #131c2e; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 4px; text-align: center; position: relative; }
+  .hex { width: var(--hex-w); height: var(--hex-h); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: var(--border); position: relative; display: flex; align-items: center; justify-content: center; cursor: default; transition: transform 0.2s ease, background 0.25s ease; }
+  .hex-inner { width: calc(100% - 4px); height: calc(100% - 4px); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 6px; text-align: center; position: relative; }
 
   .hex.owner-1 { background: var(--p1); }
-  .hex.owner-1 .hex-inner { background: linear-gradient(160deg, #1e3a8a, #0f172a); }
+  .hex.owner-1 .hex-inner { background: var(--p1-bg); }
   .hex.owner-2 { background: var(--p2); }
-  .hex.owner-2 .hex-inner { background: linear-gradient(160deg, #7f1d1d, #0f172a); }
+  .hex.owner-2 .hex-inner { background: var(--p2-bg); }
 
-  .hex.selectable { background: var(--gold); animation: pulseHex 1.4s infinite; }
+  /* SADECE AKTİF OYUNCUNUN SEÇEBİLECEĞİ KOMŞU PETEKLER */
+  .hex.selectable { background: #ffffff; cursor: pointer; animation: pulseTarget 1.6s infinite; }
   .hex.selectable:hover { transform: scale(1.06); z-index: 5; }
 
-  @keyframes pulseHex {
-    0%, 100% { filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.5)); }
-    50% { filter: drop-shadow(0 0 11px rgba(245, 158, 11, 0.95)); }
+  @keyframes pulseTarget {
+    0%, 100% { filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.35)); }
+    50% { filter: drop-shadow(0 0 9px rgba(255, 255, 255, 0.85)); }
   }
 
-  .hex-icon { font-size: 1.25rem; line-height: 1; margin-bottom: 2px; }
-  .hex-title { font-size: 0.65rem; font-weight: 700; line-height: 1.1; color: #e2e8f0; max-width: 92%; word-wrap: break-word; }
-  .hex-badges { position: absolute; bottom: 7px; display: flex; gap: 2px; font-size: 0.6rem; color: #fbbf24; font-weight: 700; }
-  .flag-badge { position: absolute; top: 6px; font-size: 0.8rem; }
+  .hex-tag { font-size: 0.52rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); opacity: 0.85; margin-bottom: 3px; }
+  .hex.owner-2 .hex-tag { color: #fca5a5; }
+  .hex-title { font-size: 0.66rem; font-weight: 700; line-height: 1.15; color: var(--text); max-width: 94%; word-break: normal; overflow-wrap: break-word; }
 
-  /* SORU & CEVAP MODALI */
-  #questionModal { position: fixed; inset: 0; background: rgba(0,0,0,0.84); z-index: 90; display: none; align-items: flex-start; justify-content: center; padding: 24px 14px; overflow-y: auto; }
-  .modal-box { background: var(--panel); border: 2px solid var(--border); border-radius: 20px; padding: 20px; width: 100%; max-width: 440px; text-align: center; position: relative; margin-top: 10px; }
-  .chain-display { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 12px 0; }
-  .crit-box { flex: 1; background: #0b0f19; border: 1px solid var(--border); padding: 10px 6px; border-radius: 12px; }
-  .crit-box .c-icon { font-size: 1.5rem; }
-  .crit-box .c-name { font-size: 0.82rem; font-weight: 700; margin-top: 4px; color: #f1f5f9; }
-  .chain-plus { font-size: 1.4rem; font-weight: 800; color: var(--gold); }
+  .hex-meta-top { position: absolute; top: 9px; font-size: 0.5rem; font-weight: 900; letter-spacing: 0.1em; color: var(--bg); background: var(--accent); padding: 1px 5px; border-radius: 3px; }
+  .hex.owner-2 .hex-meta-top { background: var(--p2); color: #fff; }
 
-  .search-wrap { position: relative; margin-top: 10px; }
-  #playerInput { width: 100%; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--border); background: #090d16; color: white; font-size: 1rem; outline: none; }
-  #playerInput:focus { border-color: var(--gold); }
-  #suggestions { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; max-height: 210px; overflow-y: auto; margin-top: 6px; display: none; }
-  .sug-item { padding: 10px 12px; text-align: left; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-  .sug-item:hover, .sug-item:active { background: #1e293b; }
+  .hex-meta-bot { position: absolute; bottom: 9px; font-size: 0.54rem; font-weight: 800; letter-spacing: 0.06em; color: var(--muted); }
+  .hex.locked .hex-meta-bot { color: var(--accent); }
 
-  .helper-bar { font-size: 0.78rem; color: #cbd5e1; background: rgba(255,255,255,0.05); padding: 6px 14px; border-radius: 20px; margin: 0 10px 12px 10px; text-align: center; }
+  /* SORU MODALI */
+  #questionModal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.86); backdrop-filter: blur(6px); z-index: 90; display: none; align-items: flex-start; justify-content: center; padding: 28px 14px; overflow-y: auto; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; width: 100%; max-width: 440px; text-align: center; margin-top: 10px; }
+  .modal-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
 
-  @media (max-width: 480px) {
-    :root { --hex-w: 66px; --hex-h: 76px; }
-    .hex-row { margin-top: -15px; gap: 4px; }
-    .hex-icon { font-size: 0.98rem; }
-    .hex-title { font-size: 0.52rem; }
-    header { padding: 10px 10px; }
-    .score-badge { font-size: 1.2rem; }
+  .chain-display { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 16px 0; }
+  .crit-box { flex: 1; background: var(--bg); border: 1px solid var(--border); padding: 14px 10px; border-radius: 10px; }
+  .crit-box .c-tag { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+  .crit-box .c-name { font-size: 0.92rem; font-weight: 800; margin-top: 4px; color: var(--text); }
+  .chain-plus { font-size: 1.2rem; font-weight: 900; color: var(--accent); }
+
+  .search-wrap { position: relative; margin-top: 12px; }
+  #playerInput { width: 100%; padding: 13px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem; font-weight: 500; outline: none; }
+  #playerInput:focus { border-color: var(--accent); }
+  #suggestions { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; max-height: 220px; overflow-y: auto; margin-top: 6px; display: none; }
+  .sug-item { padding: 11px 14px; text-align: left; cursor: pointer; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; font-weight: 600; }
+  .sug-item:last-child { border-bottom: none; }
+  .sug-item:hover, .sug-item:active { background: var(--surface-2); }
+
+  @media (max-width: 500px) {
+    :root { --hex-w: 68px; --hex-h: 78px; }
+    .hex-row { margin-top: -16px; gap: 5px; }
+    .hex-tag { font-size: 0.44rem; }
+    .hex-title { font-size: 0.54rem; }
+    header { padding: 10px 10px; gap: 6px; }
+    .player-card { padding: 7px 9px; }
+    .p-name { font-size: 0.78rem; }
+    .score-badge { font-size: 1.25rem; }
   }
 </style>
 </head>
@@ -112,62 +143,66 @@
 <!-- LOBİ EKRANI -->
 <div id="lobbyScreen">
   <div class="lobby-card">
-    <div class="lobby-title">⚽ HEXFOOTY</div>
-    <div class="lobby-sub">5-4-5-4-5 Zincirleme Futbol Strateji Oyunu</div>
+    <div class="brand-tag">5-4-5-4-5 STRATEJİ</div>
+    <div class="lobby-title">HEXFOOTY</div>
+    <div class="lobby-sub">Zincirleme Kesişim Futbol Oyunu</div>
 
     <div class="progress-wrap">
-      <div id="dbStatus" style="font-size:0.78rem; color:#38bdf8; font-weight:600;">CSV Veritabanı Okunuyor... (Hemen oynayabilirsin!)</div>
+      <div class="progress-top">
+        <span id="dbStatus">Veritabanı hazırlanıyor...</span>
+        <span id="dbPercent">12%</span>
+      </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="dbProgress"></div>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="startLocalGame()">🎮 Aynı Cihazda Oyna (Pass & Play)</button>
-    <hr style="border-color: var(--border); margin: 12px 0;">
+    <button class="btn btn-accent" onclick="startLocalGame()">Aynı Cihazda Oyna (İki Kişi)</button>
+    <div class="divider"></div>
 
-    <button class="btn btn-danger" onclick="createOnlineRoom()">🌐 Oda Kur (Kod ile Arkadaşını Çağır)</button>
+    <button class="btn btn-outline" onclick="createOnlineRoom()">Oda Kur (Arkadaşınla Oyna)</button>
     <div id="roomCreatedBox" style="display:none;">
-      <div style="font-size:0.78rem; color:#94a3b8;">Bu oda kodunu arkadaşına at:</div>
-      <div class="room-code-display" id="myRoomCode">...</div>
-      <div style="font-size:0.78rem; color:#f59e0b;">Arkadaşın katılınca oyun otomatik başlayacak...</div>
+      <div style="font-size:0.75rem; color:var(--muted); margin-top:6px;">Oda Kodu</div>
+      <div class="room-code-display" id="myRoomCode">-----</div>
+      <div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px;">Rakip bekleniyor...</div>
     </div>
 
-    <div class="input-row" style="margin-top:8px;">
-      <input type="text" id="joinCodeInput" placeholder="ODA KODU GİR (Örn: K9X2P)">
-      <button class="btn btn-secondary" style="width:auto; margin:0; padding:0 16px;" onclick="joinOnlineRoom()">Katıl</button>
+    <div class="input-row">
+      <input type="text" id="joinCodeInput" placeholder="ODA KODU">
+      <button class="btn btn-ghost" style="width:auto; margin:0; padding:0 18px;" onclick="joinOnlineRoom()">Katıl</button>
     </div>
 
-    <button class="btn btn-secondary" onclick="quickMatchmaking()">⚡ Rastgele Rakiple Eşleş (Online)</button>
-    <div id="matchStatus" style="font-size:0.78rem; color:#f59e0b; margin-top:4px;"></div>
+    <button class="btn btn-ghost" onclick="quickMatchmaking()">Rastgele Rakiple Eşleş</button>
+    <div id="matchStatus" style="font-size:0.76rem; color:var(--accent); margin-top:4px;"></div>
   </div>
 </div>
 
 <!-- ÜST SKOR VE SÜRE PANELİ -->
 <header>
   <div class="player-card p1 active" id="p1Card">
-    <div>
-      <div style="font-size:0.68rem; color:#93c5fd; font-weight:700;">MAVİ (SAĞ ÜST 🚩)</div>
-      <div style="font-size:0.88rem; font-weight:800;" id="p1Name">Oyuncu 1</div>
+    <div class="p-meta">
+      <span class="p-role">SARI / SAĞ ÜST</span>
+      <span class="p-name" id="p1Name">Oyuncu 1</span>
     </div>
     <div class="score-badge" id="p1Score">1</div>
   </div>
 
   <div class="center-hud">
     <div class="timer-box" id="timerDisplay">30</div>
-    <div class="turn-info" id="turnText">Sıra: Mavi</div>
+    <div class="turn-info" id="turnText">SIRA: SARI</div>
   </div>
 
   <div class="player-card p2" id="p2Card">
     <div class="score-badge" id="p2Score">1</div>
-    <div style="text-align:right;">
-      <div style="font-size:0.68rem; color:#fca5a5; font-weight:700;">KIRMIZI (SOL ALT 🚩)</div>
-      <div style="font-size:0.88rem; font-weight:800;" id="p2Name">Oyuncu 2</div>
+    <div class="p-meta" style="text-align:right;">
+      <span class="p-role">KIRMIZI / SOL ALT</span>
+      <span class="p-name" id="p2Name">Oyuncu 2</span>
     </div>
   </div>
 </header>
 
 <div class="helper-bar" id="helperText">
-  İlerlemek için <b>sarı çerçeveli</b> komşu peteklerden birine tıkla! (Her petek +1, Rakip Bayrağı 🚩 +5 Puan)
+  İlerlemek için <b>beyaz çerçeveli</b> komşu peteklerden birini seç. (Her petek +1, Rakip Kalesi +5 Puan)
 </div>
 
 <!-- 5-4-5-4-5 ALTIGEN OYUN TAHTASI -->
@@ -176,92 +211,91 @@
 <!-- SORU MODALI -->
 <div id="questionModal">
   <div class="modal-box">
-    <div style="font-size:0.78rem; color:#94a3b8; font-weight:600;">HER İKİ KRİTERE UYAN FUTBOLCUYU YAZ</div>
+    <div class="modal-label">ZİNCİR KESİŞİM SORUSU</div>
     <div class="chain-display">
       <div class="crit-box">
-        <div class="c-icon" id="qFromIcon">🦁</div>
+        <div class="c-tag" id="qFromTag">KULÜP</div>
         <div class="c-name" id="qFromName">Galatasaray</div>
       </div>
       <div class="chain-plus">+</div>
       <div class="crit-box">
-        <div class="c-icon" id="qToIcon">🏆</div>
+        <div class="c-tag" id="qToTag">KUPA</div>
         <div class="c-name" id="qToName">ŞL Şampiyonu</div>
       </div>
     </div>
 
-    <div id="sourceSwitchWrap" style="margin-bottom:8px; display:none;">
-      <label style="font-size:0.74rem; color:#94a3b8;">Hangi komşu peteğinden geçmek istiyorsun?</label>
-      <select id="sourceSelect" onchange="updateModalSource()" style="width:100%; padding:7px; border-radius:8px; background:#090d16; color:white; border:1px solid var(--border); margin-top:4px;"></select>
+    <div id="sourceSwitchWrap" style="margin-bottom:10px; display:none; text-align:left;">
+      <label style="font-size:0.72rem; color:var(--muted); font-weight:600;">Bağlantı Peteğini Değiştir:</label>
+      <select id="sourceSelect" onchange="updateModalSource()" style="width:100%; padding:8px; border-radius:8px; background:var(--bg); color:var(--text); border:1px solid var(--border); margin-top:4px; font-weight:600;"></select>
     </div>
 
     <div class="search-wrap">
-      <input type="text" id="playerInput" placeholder="Futbolcu adını yaz ve listeden seç..." autocomplete="off">
+      <input type="text" id="playerInput" placeholder="Futbolcu adını yaz..." autocomplete="off">
       <div id="suggestions"></div>
     </div>
 
-    <div id="feedbackMsg" style="min-height:20px; font-size:0.84rem; margin-top:8px; font-weight:700;"></div>
+    <div id="feedbackMsg" style="min-height:20px; font-size:0.82rem; margin-top:10px; font-weight:600;"></div>
 
-    <div style="display:flex; gap:10px; margin-top:10px;">
-      <button class="btn btn-secondary" style="margin:0; padding:10px;" onclick="closeQuestionModal()">Vazgeç / Geri Dön</button>
+    <div style="margin-top:12px;">
+      <button class="btn btn-outline" style="margin:0; padding:10px;" onclick="closeQuestionModal()">Vazgeç</button>
     </div>
   </div>
 </div>
 
 <script>
-// ================= 1. KATEGORİ HAVUZU (40 FARKLI KATEGORİ) =================
+// ================= 1. EMOJİSİZ MİNİMALİST KATEGORİ HAVUZU =================
 const CATEGORIES = [
-  { id: 'GS', name: 'Galatasaray', icon: '🦁' },
-  { id: 'FB', name: 'Fenerbahçe', icon: '🐦' },
-  { id: 'BJK', name: 'Beşiktaş', icon: '🦅' },
-  { id: 'TS', name: 'Trabzonspor', icon: '🌀' },
-  { id: 'RMA', name: 'Real Madrid', icon: '👑' },
-  { id: 'BAR', name: 'Barcelona', icon: '🔵🔴' },
-  { id: 'ATM', name: 'Atlético Madrid', icon: '🔴⚪' },
-  { id: 'MCI', name: 'Man City', icon: '🩵' },
-  { id: 'MUN', name: 'Man United', icon: '🔱' },
-  { id: 'LIV', name: 'Liverpool', icon: '🔥' },
-  { id: 'ARS', name: 'Arsenal', icon: '💣' },
-  { id: 'CHE', name: 'Chelsea', icon: '🦁🔵' },
-  { id: 'JUV', name: 'Juventus', icon: '🦓' },
-  { id: 'INT', name: 'Inter Milan', icon: '🐍' },
-  { id: 'MIL', name: 'AC Milan', icon: '👹' },
-  { id: 'NAP', name: 'Napoli', icon: '🌋' },
-  { id: 'ROM', name: 'AS Roma', icon: '🐺' },
-  { id: 'BAY', name: 'Bayern Münih', icon: '🥨' },
-  { id: 'BVB', name: 'Dortmund', icon: '🐝' },
-  { id: 'PSG', name: 'PSG', icon: '🗼' },
-  { id: 'MON', name: 'AS Monaco', icon: '🇲🇨' },
-  { id: 'LYO', name: 'Olympique Lyon', icon: '🦁🇫🇷' },
-  { id: 'AJA', name: 'Ajax', icon: '🛡️' },
-  { id: 'POR', name: 'FC Porto', icon: '🐉' },
-  { id: 'BEN', name: 'Benfica', icon: '🦅🔴' },
-  { id: 'UCL_WIN', name: 'ŞL Şampiyonu', icon: '🏆' },
-  { id: 'SL_WIN', name: 'Süper Lig Şamp.', icon: '🇹🇷🏆' },
-  { id: 'TOP5_WIN', name: '5 Büyük Lig Şamp.', icon: '🥇' },
-  { id: 'NAT_TUR', name: 'Türkiye Milli', icon: '🇹🇷' },
-  { id: 'NAT_BRA', name: 'Brezilya Milli', icon: '🇧🇷' },
-  { id: 'NAT_ARG', name: 'Arjantin Milli', icon: '🇦🇷' },
-  { id: 'NAT_FRA', name: 'Fransa Milli', icon: '🇫🇷' },
-  { id: 'NAT_GER', name: 'Almanya Milli', icon: '🇩🇪' },
-  { id: 'NAT_ENG', name: 'İngiltere Milli', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-  { id: 'NAT_ESP', name: 'İspanya Milli', icon: '🇪🇸' },
-  { id: 'NAT_ITA', name: 'İtalya Milli', icon: '🇮🇹' },
-  { id: 'NAT_POR', name: 'Portekiz Milli', icon: '🇵🇹' },
-  { id: 'NAT_NED', name: 'Hollanda Milli', icon: '🇳🇱' },
-  { id: 'G_100', name: '100+ Kariyer Golü', icon: '⚽💯' },
-  { id: 'A_50', name: '50+ Kariyer Asisti', icon: '🎯' },
-  { id: 'M_400', name: '400+ Resmi Maç', icon: '🏃‍♂️' },
-  { id: 'NAT_50', name: '50+ Milli Maç', icon: '🌍' },
-  { id: 'MV_20M', name: '20M€+ Piyasa Değ.', icon: '💎' },
-  { id: 'TM_MESSI', name: 'Messi ile Oynamış', icon: '🐐🤝' },
-  { id: 'TM_RONALDO', name: 'Ronaldo ile Oynamış', icon: '7️⃣🤝' },
-  { id: 'TM_MUSLERA', name: 'Muslera ile Oynamış', icon: '🧤🤝' }
+  { id: 'GS', name: 'Galatasaray', tag: 'KULÜP' },
+  { id: 'FB', name: 'Fenerbahçe', tag: 'KULÜP' },
+  { id: 'BJK', name: 'Beşiktaş', tag: 'KULÜP' },
+  { id: 'TS', name: 'Trabzonspor', tag: 'KULÜP' },
+  { id: 'RMA', name: 'Real Madrid', tag: 'KULÜP' },
+  { id: 'BAR', name: 'Barcelona', tag: 'KULÜP' },
+  { id: 'ATM', name: 'Atletico', tag: 'KULÜP' },
+  { id: 'MCI', name: 'Man City', tag: 'KULÜP' },
+  { id: 'MUN', name: 'Man United', tag: 'KULÜP' },
+  { id: 'LIV', name: 'Liverpool', tag: 'KULÜP' },
+  { id: 'ARS', name: 'Arsenal', tag: 'KULÜP' },
+  { id: 'CHE', name: 'Chelsea', tag: 'KULÜP' },
+  { id: 'JUV', name: 'Juventus', tag: 'KULÜP' },
+  { id: 'INT', name: 'Inter', tag: 'KULÜP' },
+  { id: 'MIL', name: 'AC Milan', tag: 'KULÜP' },
+  { id: 'NAP', name: 'Napoli', tag: 'KULÜP' },
+  { id: 'ROM', name: 'AS Roma', tag: 'KULÜP' },
+  { id: 'BAY', name: 'Bayern', tag: 'KULÜP' },
+  { id: 'BVB', name: 'Dortmund', tag: 'KULÜP' },
+  { id: 'PSG', name: 'PSG', tag: 'KULÜP' },
+  { id: 'MON', name: 'Monaco', tag: 'KULÜP' },
+  { id: 'LYO', name: 'Lyon', tag: 'KULÜP' },
+  { id: 'AJA', name: 'Ajax', tag: 'KULÜP' },
+  { id: 'POR', name: 'FC Porto', tag: 'KULÜP' },
+  { id: 'BEN', name: 'Benfica', tag: 'KULÜP' },
+  { id: 'UCL_WIN', name: 'ŞL Şampiyonu', tag: 'KUPA' },
+  { id: 'SL_WIN', name: 'Süper Lig Şamp.', tag: 'KUPA' },
+  { id: 'TOP5_WIN', name: '5 Büyük Lig', tag: 'KUPA' },
+  { id: 'NAT_TUR', name: 'Türkiye', tag: 'MİLLİ' },
+  { id: 'NAT_BRA', name: 'Brezilya', tag: 'MİLLİ' },
+  { id: 'NAT_ARG', name: 'Arjantin', tag: 'MİLLİ' },
+  { id: 'NAT_FRA', name: 'Fransa', tag: 'MİLLİ' },
+  { id: 'NAT_GER', name: 'Almanya', tag: 'MİLLİ' },
+  { id: 'NAT_ENG', name: 'İngiltere', tag: 'MİLLİ' },
+  { id: 'NAT_ESP', name: 'İspanya', tag: 'MİLLİ' },
+  { id: 'NAT_ITA', name: 'İtalya', tag: 'MİLLİ' },
+  { id: 'NAT_POR', name: 'Portekiz', tag: 'MİLLİ' },
+  { id: 'NAT_NED', name: 'Hollanda', tag: 'MİLLİ' },
+  { id: 'G_100', name: '100+ Gol', tag: 'STAT' },
+  { id: 'A_50', name: '50+ Asist', tag: 'STAT' },
+  { id: 'M_400', name: '400+ Maç', tag: 'STAT' },
+  { id: 'NAT_50', name: '50+ Milli', tag: 'STAT' },
+  { id: 'MV_20M', name: '20M€+ Değer', tag: 'DEĞER' },
+  { id: 'TM_MESSI', name: 'Messi ile', tag: 'ORTAK' },
+  { id: 'TM_RONALDO', name: 'Ronaldo ile', tag: 'ORTAK' },
+  { id: 'TM_MUSLERA', name: 'Muslera ile', tag: 'ORTAK' }
 ];
 
-// ================= 2. ANINDA BAŞLANGIÇ VERİTABANI + OTOMATİK CSV OKUYUCU =================
+// ================= 2. VERİTABANI VE OTOMATİK CSV OKUYUCU =================
 const playerMap = new Map();
 
-// İlk saniyeden oynanabilmesi için temel yıldızlar:
 const SEED_PLAYERS = [
   { id: 1, n: "Wesley Sneijder", t: ["GS","RMA","INT","AJA","UCL_WIN","SL_WIN","TOP5_WIN","NAT_NED","NAT_50","G_100","A_50","M_400","TM_MUSLERA","MV_20M"] },
   { id: 2, n: "Didier Drogba", t: ["GS","CHE","UCL_WIN","SL_WIN","TOP5_WIN","G_100","A_50","M_400","TM_MUSLERA","MV_20M","NAT_50"] },
@@ -310,7 +344,6 @@ SEED_PLAYERS.forEach(p => {
   playerMap.set(p.id, { id: p.id, n: p.n, norm: normalizeStr(p.n), tags: new Set(p.t) });
 });
 
-// CSV'lerdeki gerçek Team ID Haritaları
 const CLUB_ID_MAP = {
   141: 'GS', 36: 'FB', 114: 'BJK', 449: 'TS',
   418: 'RMA', 131: 'BAR', 13: 'ATM',
@@ -349,6 +382,12 @@ const TOP5_WIN_SET = new Set([
   "2001_1041","2002_1041","2003_1041","2004_1041","2005_1041","2006_1041","2007_1041","2008_40","2009_244","2010_1082","2011_969","2012_583","2013_583","2014_583","2015_583","2016_162","2017_583","2018_583","2019_583","2020_1082","2021_583","2022_583","2023_583"
 ]);
 
+function setProgress(pct, text) {
+  document.getElementById('dbProgress').style.width = pct + '%';
+  document.getElementById('dbPercent').innerText = pct + '%';
+  document.getElementById('dbStatus').innerText = text;
+}
+
 async function fetchTextSafe(url) {
   try {
     const r = await fetch(url);
@@ -366,26 +405,18 @@ async function processLinesChunked(text, callback) {
     const line = lines[i];
     if (!line) continue;
     callback(line);
-    if (i % 45000 === 0) {
-      await new Promise(r => setTimeout(r, 0));
-    }
+    if (i % 45000 === 0) await new Promise(r => setTimeout(r, 0));
   }
 }
 
 async function loadAllCSVsAutomatically() {
-  const statusEl = document.getElementById('dbStatus');
-  const progEl = document.getElementById('dbProgress');
-
-  // 1. İsimleri Yükle (player_names.csv)
   const namesTxt = await fetchTextSafe('player_names.csv');
   if (!namesTxt) {
-    statusEl.innerText = '⚡ Hızlı Mod Aktif (CSV dosyaları aynı klasöre atıldığında otomatik okunur)';
-    progEl.style.width = '100%';
+    setProgress(100, 'Hızlı Veritabanı Aktif');
     return;
   }
 
-  statusEl.innerText = '1/5: Futbolcu isimleri okunuyor...';
-  progEl.style.width = '25%';
+  setProgress(25, 'Oyuncular yükleniyor...');
   await processLinesChunked(namesTxt, (line) => {
     const commaIdx = line.indexOf(',');
     if (commaIdx === -1) return;
@@ -396,9 +427,7 @@ async function loadAllCSVsAutomatically() {
     }
   });
 
-  // 2. Milli Takım Verileri (player_national_performances.csv)
-  statusEl.innerText = '2/5: Milli takım kariyerleri işleniyor...';
-  progEl.style.width = '45%';
+  setProgress(45, 'Milli takım verileri...');
   const natTxt = await fetchTextSafe('player_national_performances.csv');
   await processLinesChunked(natTxt, (line) => {
     const p = line.split(',');
@@ -413,9 +442,7 @@ async function loadAllCSVsAutomatically() {
     }
   });
 
-  // 3. Piyasa Değerleri (player_latest_market_value.csv)
-  statusEl.innerText = '3/5: Piyasa değerleri işleniyor...';
-  progEl.style.width = '60%';
+  setProgress(60, 'Piyasa değerleri...');
   const mvTxt = await fetchTextSafe('player_latest_market_value.csv');
   await processLinesChunked(mvTxt, (line) => {
     const p = line.split(',');
@@ -427,9 +454,7 @@ async function loadAllCSVsAutomatically() {
     }
   });
 
-  // 4. Kulüp Performansları, Goller, Asistler ve Kupalar (player_performances_small.csv)
-  statusEl.innerText = '4/5: Kulüp kariyerleri ve kupalar hesaplanıyor...';
-  progEl.style.width = '80%';
+  setProgress(80, 'Kulüp kariyerleri ve kupalar...');
   const perfTxt = await fetchTextSafe('player_performances_small.csv');
   const totals = new Map();
 
@@ -453,13 +478,8 @@ async function loadAllCSVsAutomatically() {
     }
 
     let st = totals.get(pid);
-    if (!st) {
-      st = [0, 0, 0];
-      totals.set(pid, st);
-    }
-    st[0] += apps;
-    st[1] += goals;
-    st[2] += assists;
+    if (!st) { st = [0, 0, 0]; totals.set(pid, st); }
+    st[0] += apps; st[1] += goals; st[2] += assists;
   });
 
   totals.forEach((st, pid) => {
@@ -470,11 +490,8 @@ async function loadAllCSVsAutomatically() {
     if (st[2] >= 50) pObj.tags.add('A_50');
   });
 
-  // 5. Takım Arkadaşlığı (player_tmmts.csv)
-  statusEl.innerText = '5/5: Takım arkadaşları eşleştiriliyor...';
-  progEl.style.width = '95%';
+  setProgress(95, 'Takım arkadaşları...');
   const starMap = { 28003: 'TM_MESSI', 8198: 'TM_RONALDO', 58088: 'TM_MUSLERA' };
-
   for (const tmFile of ['player_tmmts.csv', 'player_tmmts_2.csv']) {
     const tmTxt = await fetchTextSafe(tmFile);
     await processLinesChunked(tmTxt, (line) => {
@@ -486,8 +503,7 @@ async function loadAllCSVsAutomatically() {
     });
   }
 
-  progEl.style.width = '100%';
-  statusEl.innerText = `✅ Tüm CSV'ler Yüklendi! (${playerMap.size.toLocaleString()} Futbolcu Hazır)`;
+  setProgress(100, `Veritabanı Hazır (${playerMap.size.toLocaleString()} Oyuncu)`);
   if (!gameOver && board.length > 0) renderBoard();
 }
 
@@ -495,8 +511,8 @@ loadAllCSVsAutomatically();
 
 // ================= 3. 5-4-5-4-5 ALTIGEN TAHTA VE OYUN MANTIĞI =================
 const ROW_LENGTHS = [5, 4, 5, 4, 5];
-const P1_START_IDX = 4;  // Sağ Üst Köşe (Mavi Bayrak)
-const P2_START_IDX = 18; // Sol Alt Köşe (Kırmızı Bayrak)
+const P1_START_IDX = 4;  // Sağ Üst Köşe (Sarı)
+const P2_START_IDX = 18; // Sol Alt Köşe (Kırmızı)
 
 let board = [];
 let currentTurn = 1;
@@ -582,6 +598,7 @@ let activeTargetIdx = null;
 let validSourceIndices = [];
 let chosenSourceIdx = null;
 
+// SADECE sırası gelen oyuncunun KENDİ peteklerine komşu kutucukları aktif eder
 function getSelectableTargetsForPlayer(playerNum) {
   const targets = new Set();
   board.forEach(cell => {
@@ -617,24 +634,25 @@ function renderBoard() {
       hex.className = 'hex';
       if (cell.owner === 1) hex.classList.add('owner-1');
       if (cell.owner === 2) hex.classList.add('owner-2');
+      if (cell.locked) hex.classList.add('locked');
       if (selectableTargets.has(idx)) hex.classList.add('selectable');
 
-      let flagHtml = '';
-      if (cell.isFlagP1 || cell.isFlagP2) flagHtml = `<div class="flag-badge">🚩</div>`;
+      let topBadge = '';
+      if (cell.isFlagP1 || cell.isFlagP2) topBadge = `<div class="hex-meta-top">KALE</div>`;
 
-      let badgeHtml = '';
+      let botBadge = '';
       if (cell.locked) {
-        badgeHtml = `<span>🔒</span>`;
+        botBadge = `<div class="hex-meta-bot">KİLİTLİ</div>`;
       } else if (cell.steals > 0) {
-        badgeHtml = `<span>⚔️${cell.steals}/2</span>`;
+        botBadge = `<div class="hex-meta-bot">${cell.steals}/2</div>`;
       }
 
       hex.innerHTML = `
         <div class="hex-inner">
-          ${flagHtml}
-          <div class="hex-icon">${cell.cat.icon}</div>
+          ${topBadge}
+          <div class="hex-tag">${cell.cat.tag}</div>
           <div class="hex-title">${cell.cat.name}</div>
-          <div class="hex-badges">${badgeHtml}</div>
+          ${botBadge}
         </div>
       `;
 
@@ -666,7 +684,7 @@ function updateScoreAndHUD() {
 
   document.getElementById('p1Card').classList.toggle('active', currentTurn === 1);
   document.getElementById('p2Card').classList.toggle('active', currentTurn === 2);
-  document.getElementById('turnText').innerText = currentTurn === 1 ? 'Sıra: Mavi' : 'Sıra: Kırmızı';
+  document.getElementById('turnText').innerText = currentTurn === 1 ? 'SIRA: SARI' : 'SIRA: KIRMIZI';
 }
 
 // ================= 4. ZİNCİR SORU MODALI VE ARAMA =================
@@ -686,7 +704,7 @@ function openQuestionForTarget(targetIdx) {
   if (validSourceIndices.length > 1) {
     switchWrap.style.display = 'block';
     sourceSelect.innerHTML = validSourceIndices.map(sIdx =>
-      `<option value="${sIdx}">${board[sIdx].cat.icon} ${board[sIdx].cat.name}</option>`
+      `<option value="${sIdx}">${board[sIdx].cat.name} (${board[sIdx].cat.tag})</option>`
     ).join('');
   } else {
     switchWrap.style.display = 'none';
@@ -708,9 +726,9 @@ function updateModalSource() {
 function populateModalCriteria() {
   const fromCat = board[chosenSourceIdx].cat;
   const toCat = board[activeTargetIdx].cat;
-  document.getElementById('qFromIcon').innerText = fromCat.icon;
+  document.getElementById('qFromTag').innerText = fromCat.tag;
   document.getElementById('qFromName').innerText = fromCat.name;
-  document.getElementById('qToIcon').innerText = toCat.icon;
+  document.getElementById('qToTag').innerText = toCat.tag;
   document.getElementById('qToName').innerText = toCat.name;
 }
 
@@ -741,9 +759,9 @@ document.getElementById('playerInput').addEventListener('input', function() {
 
   sugBox.innerHTML = matches.map(p => {
     const used = usedPlayers.has(p.id);
-    return `<div class="sug-item" onclick="${used ? '' : `submitAnswer(${p.id})`}" style="${used ? 'opacity:0.4; cursor:not-allowed;' : ''}">
+    return `<div class="sug-item" onclick="${used ? '' : `submitAnswer(${p.id})`}" style="${used ? 'opacity:0.35; cursor:not-allowed;' : ''}">
       <span>${p.n}</span>
-      <span style="font-size:0.75rem; color:${used ? '#ef4444' : '#10b981'};">${used ? 'Kullanıldı' : 'Seç ↵'}</span>
+      <span style="font-size:0.7rem; letter-spacing:0.06em; color:${used ? '#ef4444' : '#facc15'};">${used ? 'KULLANILDI' : 'SEÇ'}</span>
     </div>`;
   }).join('');
   sugBox.style.display = 'block';
@@ -758,21 +776,23 @@ function submitAnswer(playerId) {
   const fb = document.getElementById('feedbackMsg');
 
   if (player.tags.has(fromCatId) && player.tags.has(toCatId)) {
+    // KRİTİK DÜZELTME: Sıra değişmeden önce hamleyi yapan oyuncuyu kaydet!
+    const actingPlayer = currentTurn;
     usedPlayers.add(playerId);
-    applyMove(activeTargetIdx, currentTurn, player.n);
+    applyMove(activeTargetIdx, actingPlayer, player.n);
     closeQuestionModal();
 
     if (isOnline && conn) {
-      conn.send({ type: 'MOVE', targetIdx: activeTargetIdx, playerNum: currentTurn, playerName: player.n, playerId });
+      conn.send({ type: 'MOVE', targetIdx: activeTargetIdx, playerNum: actingPlayer, playerName: player.n, playerId });
     }
   } else {
     fb.style.color = '#ef4444';
-    fb.innerText = `❌ ${player.n} bu iki kritere birden uymuyor! Sıra karşıya geçti.`;
+    fb.innerText = `${player.n} bu iki kritere birden uymuyor. Sıra rakibe geçti.`;
     setTimeout(() => {
       closeQuestionModal();
       switchTurn();
       if (isOnline && conn) conn.send({ type: 'TURN_SWITCH' });
-    }, 1000);
+    }, 950);
   }
 }
 
@@ -789,7 +809,7 @@ function applyMove(targetIdx, playerNum, playerName) {
 
   if ((playerNum === 1 && targetIdx === P2_START_IDX) || (playerNum === 2 && targetIdx === P1_START_IDX)) {
     renderBoard();
-    endGame(`🚩 Bayrak Ele Geçirildi! (${playerName})`);
+    endGame(`Kale Ele Geçirildi (${playerName})`);
     return;
   }
 
@@ -824,8 +844,8 @@ function endGame(reason) {
   updateScoreAndHUD();
   const s1 = parseInt(document.getElementById('p1Score').innerText);
   const s2 = parseInt(document.getElementById('p2Score').innerText);
-  let winnerMsg = s1 > s2 ? '🏆 MAVİ KAZANDI!' : (s2 > s1 ? '🏆 KIRMIZI KAZANDI!' : '🤝 BERABERE!');
-  document.getElementById('helperText').innerHTML = `<b>${reason}</b> — ${winnerMsg} (Mavi: ${s1} | Kırmızı: ${s2})`;
+  let winnerMsg = s1 > s2 ? 'SARI OYUNCU KAZANDI' : (s2 > s1 ? 'KIRMIZI OYUNCU KAZANDI' : 'BERABERE');
+  document.getElementById('helperText').innerHTML = `<b>${reason}</b> — ${winnerMsg} (Sarı: ${s1} | Kırmızı: ${s2})`;
 }
 
 // ================= 5. ONLINE ODA & EŞLEŞME SİSTEMİ =================
@@ -933,8 +953,8 @@ function launchOnlineMatch() {
   currentTurn = 1;
   gameOver = false;
   usedPlayers.clear();
-  document.getElementById('p1Name').innerText = myPlayerNum === 1 ? 'Sen (Mavi)' : 'Rakip (Mavi)';
-  document.getElementById('p2Name').innerText = myPlayerNum === 2 ? 'Sen (Kırmızı)' : 'Rakip (Kırmızı)';
+  document.getElementById('p1Name').innerText = myPlayerNum === 1 ? 'Sen' : 'Rakip';
+  document.getElementById('p2Name').innerText = myPlayerNum === 2 ? 'Sen' : 'Rakip';
   renderBoard();
   resetTimer();
 }
